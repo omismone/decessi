@@ -1,0 +1,11 @@
+function [decessi] = convoluz(positivi,D,fattore_scala,lambda)
+positivi=positivi(:);
+n=length(positivi);
+zeri=zeros(D,1);
+L=n-D;
+T=[0:L-1]';
+g=fattore_scala*lambda*exp(-lambda*T);
+g=[zeri;g];
+decessi = conv(g,positivi);
+end
+
