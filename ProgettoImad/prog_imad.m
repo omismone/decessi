@@ -10,7 +10,7 @@ media7ggD=table2array(decessi(225:375,3));
 %media7ggD_sfasati_D=table2array(decessi((225+D):(375+D),3));
 
 %% plotto i decessi
-%{
+
 figure(1);
 subplot(2,1,1);
 plot(giorniD,casiD);
@@ -25,7 +25,7 @@ title('media 7 giorni dei decessi');
 xlabel('data');
 ylabel('media decessi');
 grid on
-%}
+
 %% carico i positivi
 positivi=readtable('iss_bydate_italia_positivi.csv');
 giorniP=table2array(positivi(247:397,1));   %dati ott2020-feb2021 nelle righe 247-397
@@ -36,7 +36,7 @@ D=15;                                       %ritardo dei morti rispetto ai rispe
 media7ggP_sfasati_D=table2array(positivi((247-D):(397-D),3));
 
 %% plotto prime figure
-%{
+
 figure(2);
 subplot(2,1,1);
 plot(giorniP,casiP);
@@ -51,7 +51,7 @@ title('media 7 giorni dei positivi');
 xlabel('data');
 ylabel('media positivi');
 grid on
-%}
+
 %% fattore scala con lscov
 phi=media7ggP_sfasati_D;
 fattore_scala=lscov(phi,media7ggD);     %x far combaciare ampiezze
@@ -64,7 +64,7 @@ hold on
 plot(giorniD,media7ggD,'x','Color','r');
 title('modello con guadagno e ritardo');
 legend('positivi scalati e moltiplicati','decessi');
-ssr2=(media7ggD - media7ggP_sfasati_D.*fattore_scala)' *(media7ggD - media7ggP_sfasati_D.*fattore_scala);
+ssr_modello1=(media7ggD - media7ggP_sfasati_D.*fattore_scala)' *(media7ggD - media7ggP_sfasati_D.*fattore_scala);
 
 %% modello esponenziale con somma
 %{
@@ -101,19 +101,25 @@ for i=1:20
     end
 end
 
-ssr_min = min(min(ssr_matrix));                                     %minimo trovato in matrice
-[indice_D_min, indice_lambda_min] = find(ssr_matrix == ssr_min);    %indici x cui è min
-D=D_vett(indice_D_min);                                             %valori x quegli indici
+ssr_min_modello_exp = min(min(ssr_matrix));                                     %minimo trovato in matrice
+[indice_D_min, indice_lambda_min] = find(ssr_matrix == ssr_min_modello_exp);    %indici x cui è min
+D=D_vett(indice_D_min);                                                         %valori x quegli indici
 lambda=l_vett(indice_lambda_min);
 
 %% convoluzione
 ingressi=table2array(positivi((247):(397),3));
 conv=convoluz(ingressi,D,fattore_scala,lambda);
-figure(5)
+figure(4)
 plot(giorniP,conv);
 hold on
 grid on
 plot(giorniD,media7ggD,'x','Color','r');
 title('modello esponenziale con convoluzione');
 legend('positivi x formula esponenziale','decessi');
-%ssr è ssr_min
+
+%% gauss-newton
+theta_k=gauss_newton(media7ggD,fattore_scala,lambda,D,positivi);
+
+%theta_k=gauss_newton(media7ggD,theta_k(1),theta_k(2),D,positivi);
+
+ssr_k=calculateSSR(positivi,D,theta_k(1),theta_k(2),media7ggD);
