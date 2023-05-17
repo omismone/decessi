@@ -1,0 +1,13 @@
+function [Yv] = phi_nl(fattore_scala,lambda,D,positivi)
+L=length(positivi);
+for t=1:L
+        ingresso=table2array(positivi((t-D-),3));
+        phi_matrix(k)=(fattore_scala*exp(-lambda*k))*lambda*ingresso;   %calcolo phi coi valori attuali (k)
+        Yv(t)=0;
+        if(D<=t)
+            for s=1:t-D
+                Yv(t)=Yv(t)+positivi(s)*fattore_scala*lambda*exp(-lambda*(t-D-s));
+            end
+        end
+end
+

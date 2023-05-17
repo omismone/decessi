@@ -1,0 +1,7 @@
+function [outputArg1,outputArg2] = rapp_incr(fattore_scala,lambda,D,positivi,delta1,delta2)
+    L=length(positivi);
+    Phi_theta=zeros(L,2);
+    Phi_theta(:,1)=(phi_nl(fattore_scala+delta1,lambda,D,positivi)-phi_nl(fattore_scala,lambda,D,positivi))/delta1;
+    
+end
+

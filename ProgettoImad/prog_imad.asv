@@ -91,19 +91,17 @@ ssr3=(media7ggD - sommaExp)' * (media7ggD - sommaExp);
 %}
 
 %% trovo D e lambda migliori modello exp
-D_range=20;
-D_vett=linspace(0,19,D_range);
-l_range=100;
-l_vett=linspace(0,1,l_range);
+D_vett=linspace(0,19,20);
+l_vett=linspace(0,1,100);
 
 %faccio una sorta di prodotto cartesiano x trovare ssr minore
-for i=1:D_range
-    for j=1:l_range
+for i=1:20
+    for j=1:100
         ssr_matrix(i,j)=calculateSSR(positivi,D_vett(i),fattore_scala,l_vett(j),media7ggD);
     end
 end
 
-ssr_min_modello_exp = min(ssr_matrix(:));                                       %minimo trovato in matrice
+ssr_min_modello_exp = min(min(ssr_matrix));                                     %minimo trovato in matrice
 [indice_D_min, indice_lambda_min] = find(ssr_matrix == ssr_min_modello_exp);    %indici x cui è min
 D=D_vett(indice_D_min);                                                         %valori x quegli indici
 lambda=l_vett(indice_lambda_min);
@@ -116,10 +114,12 @@ plot(giorniP,conv);
 hold on
 grid on
 plot(giorniD,media7ggD,'x','Color','r');
-title('modello esponenziale');
+title('modello esponenziale con convoluzione');
 legend('positivi x formula esponenziale','decessi');
 
 %% gauss-newton
-theta_k=gauss_newton(media7ggD,fattore_scala,lambda,D,positivi);
-
-ssr_k=calculateSSR(positivi,D,theta_k(1),theta_k(2),media7ggD);
+%theta_k=gauss_newton(media7ggD,fattore_scala,lambda,D,positivi);
+theta_k=gauss_newton(media7ggD,1,0.5,D,positivi);
+for l=0:100
+    theta_k=
+end
